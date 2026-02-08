@@ -2,8 +2,8 @@
 
 import * as z from "zod";
 import { useForm } from "@tanstack/react-form-nextjs";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { useImportFlexUrl } from "@/hooks/useFlex";
 import {
   Card,
   CardContent,
@@ -20,6 +20,8 @@ const formSchema = z.object({
 });
 
 export default function FlexUrlForm() {
+  const { mutate, isPending } = useImportFlexUrl();
+
   const form = useForm({
     defaultValues: {
       url: "",
@@ -27,8 +29,8 @@ export default function FlexUrlForm() {
     validators: {
       onSubmit: formSchema,
     },
-    onSubmit: async () => {
-      toast.success("URL submitted successfully!");
+    onSubmit: async ({ value }) => {
+      mutate(value.url);
     },
   });
   return (
@@ -74,8 +76,8 @@ export default function FlexUrlForm() {
       </CardContent>
       <CardFooter>
         <Field orientation="horizontal">
-          <Button type="submit" form="bug-report-form">
-            Submit
+          <Button type="submit" form="bug-report-form" disabled={isPending}>
+            {isPending ? "Importing..." : "Submit"}
           </Button>
         </Field>
       </CardFooter>
